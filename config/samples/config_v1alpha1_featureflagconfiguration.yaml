@@ -1,0 +1,6 @@
+apiVersion: config.openfeature.dev/v1alpha1
+kind: FeatureFlagConfiguration
+metadata:
+  name: featureflagconfiguration-sample
+spec:
+  # TODO(user): Add fields here
