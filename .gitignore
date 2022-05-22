@@ -1,5 +1,6 @@
 .vscode
 open-feature-operator
+of-agent
 # Binaries for programs and plugins
 *.exe
 *.exe~
