@@ -8,5 +8,5 @@ const (
 )
 
 type ISync interface {
-	Fetch(input string, strategy SYNC_STRATEGY) (string, error)
+	Fetch() (string, error)
 }

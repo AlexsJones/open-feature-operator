@@ -4,10 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
 	"os"
 	"os/signal"
 	"syscall"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/open-feature/open-feature-operator/agent/pkg/runtime"
 	"github.com/open-feature/open-feature-operator/agent/pkg/service"
@@ -16,35 +17,37 @@ import (
 )
 
 var (
-	serviceProvider    string
-	syncProvider       string
-	filePath           string
-	registeredServices map[string]service.IService = map[string]service.IService{
+	serviceProvider string
+	syncProvider    string
+	uri             string
+)
+
+func findService(name string) (service.IService, error) {
+	registeredServices := map[string]service.IService{
 		"http": &service.HttpService{
 			HttpServiceConfiguration: &service.HttpServiceConfiguration{
 				Port: int32(8080),
 			},
 		},
 	}
-	registeredSync map[string]sync.ISync = map[string]sync.ISync{
-		"filepath": &sync.FilePathSync{},
-	}
-)
-
-func findService(name string) (service.IService, error) {
 	if v, ok := registeredServices[name]; !ok {
 		return nil, errors.New("no service-provider set")
 	} else {
-		log.Printf("Using %s service-provider\n", name)
+		log.Debugf("Using %s service-provider\n", name)
 		return v, nil
 	}
 }
 
 func findSync(name string) (sync.ISync, error) {
+	registeredSync := map[string]sync.ISync{
+		"filepath": &sync.FilePathSync{
+			URI: uri,
+		},
+	}
 	if v, ok := registeredSync[name]; !ok {
 		return nil, errors.New("no sync-provider set")
 	} else {
-		log.Printf("Using %s sync-provider\n", name)
+		log.Debugf("Using %s sync-provider\n", name)
 		return v, nil
 	}
 }
@@ -96,7 +99,7 @@ func init() {
 
 	startCmd.Flags().StringVarP(&serviceProvider, "service-provider", "s", "http", "Set a serve provider e.g. http or socket")
 	startCmd.Flags().StringVarP(&syncProvider, "sync-provider", "y", "filepath", "Set a sync provider e.g. filepath or remote")
-	startCmd.Flags().StringVarP(&filePath, "filepath", "f", "", "Set a sync provider filepath to read data from")
+	startCmd.Flags().StringVarP(&uri, "uri", "f", "", "Set a sync provider uri to read data from this can be a filepath or url")
 	rootCmd.AddCommand(startCmd)
 
 }
