@@ -9,7 +9,7 @@ resources:
     namespaced: true
   controller: true
   domain: openfeature.dev
-  group: config
+  group: core
   kind: FeatureFlagConfiguration
   path: github.com/open-feature/open-feature-operator/api/v1alpha1
   version: v1alpha1
