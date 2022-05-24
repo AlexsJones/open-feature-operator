@@ -12,7 +12,7 @@ testbin/*
 
 # Test binary, build with `go test -c`
 *.test
-.key
+*.key
 
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
@@ -20,8 +20,9 @@ testbin/*
 # Kubernetes Generated files - skip generated files, except for vendored files
 
 !vendor/**/zz_generated.*
-.crt
-.srl
+*.crt
+*.srl
+*.csr
 .key
 .conf
 # editor and IDE paraphernalia
