@@ -1,0 +1,6 @@
+apiVersion: core.openfeature.dev/v1alpha1
+kind: AgentWebhook
+metadata:
+  name: agentwebhook-sample
+spec:
+  # TODO(user): Add fields here
