@@ -32,10 +32,14 @@ func (m *PodMutator) Handle(ctx context.Context, req admission.Request) admissio
 		return admission.Errored(http.StatusBadRequest, err)
 	}
 
-	if pod.Annotations == nil {
-		pod.Annotations = map[string]string{}
-	}
-	pod.Annotations["injected-annotation"] = "foo"
+	// Inject the agent
+	pod.Spec.Containers = append(pod.Spec.Containers, corev1.Container{
+		Name:  "agent",
+		Image: "tibbar/of-agent:v0.0.1",
+		Args: []string{
+			"-f", "/etc/of-agent/config.yaml",
+		},
+	})
 
 	marshaledPod, err := json.Marshal(pod)
 	if err != nil {
