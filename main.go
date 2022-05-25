@@ -85,18 +85,7 @@ func main() {
 		setupLog.Error(err, "unable to create controller", "controller", "FeatureFlagConfiguration")
 		os.Exit(1)
 	}
-	if err = (&corev1alpha1.Deployment{}).SetupWebhookWithManager(mgr); err != nil {
-		setupLog.Error(err, "unable to create webhook", "webhook", "Deployment")
-		os.Exit(1)
-	}
-	if err = (&batchv1.CronJob{}).SetupWebhookWithManager(mgr); err != nil {
-		setupLog.Error(err, "unable to create webhook", "webhook", "CronJob")
-		os.Exit(1)
-	}
-	if err = (&appsv1.Deployment{}).SetupWebhookWithManager(mgr); err != nil {
-		setupLog.Error(err, "unable to create webhook", "webhook", "Deployment")
-		os.Exit(1)
-	}
+
 	//+kubebuilder:scaffold:builder
 
 	if err := mgr.AddHealthzCheck("healthz", healthz.Ping); err != nil {
