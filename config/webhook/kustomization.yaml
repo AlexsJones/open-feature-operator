@@ -4,3 +4,6 @@ resources:
 
 configurations:
 - kustomizeconfig.yaml
+
+commonAnnotations:
+  cert-manager.io/inject-ca-from: open-feature-operator-system/webhook-cert 

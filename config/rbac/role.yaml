@@ -18,7 +18,7 @@ rules:
   - update
   - watch
 - apiGroups:
-  - config.openfeature.dev
+  - core.openfeature.dev
   resources:
   - featureflagconfigurations
   verbs:
@@ -30,13 +30,13 @@ rules:
   - update
   - watch
 - apiGroups:
-  - config.openfeature.dev
+  - core.openfeature.dev
   resources:
   - featureflagconfigurations/finalizers
   verbs:
   - update
 - apiGroups:
-  - config.openfeature.dev
+  - core.openfeature.dev
   resources:
   - featureflagconfigurations/status
   verbs:

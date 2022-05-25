@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/go-logr/logr"
 	corev1 "k8s.io/api/core/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/webhook/admission"
@@ -19,12 +20,13 @@ import (
 type PodMutator struct {
 	Client  client.Client
 	decoder *admission.Decoder
+	Log     logr.Logger
 }
 
 // PodMutator adds an annotation to every incoming pods.
 func (m *PodMutator) Handle(ctx context.Context, req admission.Request) admission.Response {
 	pod := &corev1.Pod{}
-
+	m.Log.Info("Handling pod %s/%s", req.Namespace, req.Name)
 	err := m.decoder.Decode(req, pod)
 	if err != nil {
 		return admission.Errored(http.StatusBadRequest, err)
