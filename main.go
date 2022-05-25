@@ -91,7 +91,7 @@ func main() {
 
 	hookServer := mgr.GetWebhookServer()
 
-	hookServer.Register("/mutate", &webhook.Admission{Handler: &webhooks.PodMutator{Client: mgr.GetClient()}})
+	hookServer.Register("/mutate-v1-pod", &webhook.Admission{Handler: &webhooks.PodMutator{Client: mgr.GetClient()}})
 
 	if err := mgr.AddHealthzCheck("healthz", healthz.Ping); err != nil {
 		setupLog.Error(err, "unable to set up health check")

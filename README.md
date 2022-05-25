@@ -26,3 +26,11 @@ As per the issue [here](https://github.com/open-feature/research/issues/1)
 High level architecture is as follows:
 
 <img src="images/arch-0.png" width="560">
+
+#### Build deploy
+
+```
+docker buildx build --platform="linux/amd64,linux/arm64" -t tibbar/of-operator:v1.2 . --push
+IMG=tibbar/of-operator:v1.2 make generate
+IMG=tibbar/of-operator:v1.2 make deploy
+ ```
