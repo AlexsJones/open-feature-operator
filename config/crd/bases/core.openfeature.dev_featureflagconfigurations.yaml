@@ -37,7 +37,7 @@ spec:
             description: FeatureFlagConfigurationSpec defines the desired state of
               FeatureFlagConfiguration
             properties:
-              foo:
+              featureFlagSpec:
                 description: Foo is an example field of FeatureFlagConfiguration.
                   Edit featureflagconfiguration_types.go to remove/update
                 type: string

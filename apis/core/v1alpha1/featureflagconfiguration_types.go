@@ -29,7 +29,7 @@ type FeatureFlagConfigurationSpec struct {
 	// Important: Run "make" to regenerate code after modifying this file
 
 	// Foo is an example field of FeatureFlagConfiguration. Edit featureflagconfiguration_types.go to remove/update
-	Foo string `json:"foo,omitempty"`
+	FeatureFlagSpec string `json:"featureFlagSpec,omitempty"`
 }
 
 // FeatureFlagConfigurationStatus defines the observed state of FeatureFlagConfiguration

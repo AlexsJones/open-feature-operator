@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/go-logr/logr"
+	corev1alpha1 "github.com/open-feature/open-feature-operator/apis/core/v1alpha1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -28,20 +29,46 @@ type PodMutator struct {
 // PodMutator adds an annotation to every incoming pods.
 func (m *PodMutator) Handle(ctx context.Context, req admission.Request) admission.Response {
 	pod := &corev1.Pod{}
-	fmt.Printf("Handling pod %s/%s", req.Namespace, req.Name)
+	m.Log.V(2).Info("Handling pod %s/%s", req.Namespace, req.Name)
 	err := m.decoder.Decode(req, pod)
 	if err != nil {
 		return admission.Errored(http.StatusBadRequest, err)
 	}
 
-	if pod.ObjectMeta.Namespace == "open-feature-operator-system" {
-		m.Log.Info("Skipping pod %s/%s", req.Namespace, req.Name)
+	// Check enablement
+	val, ok := pod.GetAnnotations()["openfeature.dev"]
+	if !ok {
 		return admission.Response{}
+	} else {
+		if val != "enabled" {
+			m.Log.V(2).Info("openfeature.dev Annotation is not enabled")
+			return admission.Response{}
+		}
+	}
+	var featureFlagCustomResource corev1alpha1.FeatureFlagConfiguration
+	// Check CustomResource
+	val, ok = pod.GetAnnotations()["openfeature.dev/featureflagconfiguration"]
+	if !ok {
+		return admission.Denied("FeatureFlagConfiguration not found")
+	} else {
+		// Current limitation is to use the same namespace, this is easy to fix though
+		// e.g. namespace/name check
+		err = m.Client.Get(context.TODO(), client.ObjectKey{Name: val, Namespace: req.Namespace},
+			&featureFlagCustomResource)
+		if err != nil {
+			return admission.Denied("FeatureFlagConfiguration not found")
+		}
 	}
 
 	configName := fmt.Sprintf("%s-%s-config", pod.Name, pod.Namespace)
-	// Create the agent config
-	fmt.Printf("Creating configmap %s/%s", pod.Namespace, configName)
+	// Create the agent configmap
+	m.Client.Delete(context.TODO(), &corev1.ConfigMap{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      configName,
+			Namespace: req.Namespace,
+		},
+	}) // Delete the configmap if it exists
+	m.Log.V(1).Info("Creating configmap %s/%s", pod.Namespace, configName)
 	if err := m.Client.Create(ctx, &corev1.ConfigMap{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      configName,
@@ -49,14 +76,14 @@ func (m *PodMutator) Handle(ctx context.Context, req admission.Request) admissio
 		},
 		//TODO
 		Data: map[string]string{
-			"config.yaml": "{}",
+			"config.yaml": featureFlagCustomResource.Spec.FeatureFlagSpec,
 		},
 	}); err != nil {
 		fmt.Printf("failed to create config map %s", configName)
 		return admission.Errored(http.StatusInternalServerError, err)
 	}
 
-	fmt.Printf("Creating sidecar for pod %s/%s", pod.Namespace, pod.Name)
+	m.Log.V(1).Info("Creating sidecar for pod %s/%s", pod.Namespace, pod.Name)
 	// Inject the agent
 	pod.Spec.Volumes = append(pod.Spec.Volumes, corev1.Volume{
 		Name: "agent-config",
