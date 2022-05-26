@@ -80,5 +80,7 @@ IMG=tibbar/of-operator:v1.2 make deploy
 
  ### TODO
 
- - finalizer
- - Cleanup on deletion
+    * [ ] Add a test for the operator
+    * [ ] Detect and update configmaps on change
+    * [ ] Finalizers
+    * [ ] Cleanup on deletion
