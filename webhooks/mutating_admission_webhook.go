@@ -86,7 +86,7 @@ func (m *PodMutator) Handle(ctx context.Context, req admission.Request) admissio
 	m.Log.V(1).Info("Creating sidecar for pod %s/%s", pod.Namespace, pod.Name)
 	// Inject the agent
 	pod.Spec.Volumes = append(pod.Spec.Volumes, corev1.Volume{
-		Name: "agent-config",
+		Name: "flagd-config",
 		VolumeSource: corev1.VolumeSource{
 			ConfigMap: &corev1.ConfigMapVolumeSource{
 				LocalObjectReference: corev1.LocalObjectReference{
@@ -96,15 +96,15 @@ func (m *PodMutator) Handle(ctx context.Context, req admission.Request) admissio
 		},
 	})
 	pod.Spec.Containers = append(pod.Spec.Containers, corev1.Container{
-		Name:  "agent",
-		Image: "tibbar/of-agent:v0.0.1",
+		Name:  "flagd",
+		Image: "ghcr.io/open-feature/flagd:main",
 		Args: []string{
-			"start", "-f", "/etc/of-agent/config.yaml",
+			"start", "-f", "/etc/flagd/config.yaml",
 		},
 		VolumeMounts: []corev1.VolumeMount{
 			{
-				Name:      "agent-config",
-				MountPath: "/etc/of-agent",
+				Name:      "flagd-config",
+				MountPath: "/etc/flagd",
 			},
 		},
 	})

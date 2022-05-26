@@ -1,24 +1,6 @@
 ## open-feature-operator
 
-### Project structure
-
-```
-├── Dockerfile
-├── Makefile
-├── PROJECT
-├── README.md
-├── agent ( Contains the agent that is injected by Mutating admission webhook)
-├── api ( Custom Resource definitions )
-├── bin
-├── config
-├── controllers
-├── examples ( Example of how to use the operator )
-├── go.mod
-├── go.sum
-├── hack
-├── main.go
-└── webhooks ( Mutating admission webhooks to insert the sidecar )
-```
+The open-feature-operator is a Kubernetes native operator that allows you to expose feature flags to your applications. It injects a [flagd](https://github.com/open-feature/flagd) sidecar into your pod and allows you to poll the flagd server for feature flags in a variety of ways.
 
 ### Architecture
 
@@ -27,7 +9,18 @@ High level architecture is as follows:
 
 <img src="images/arch-0.png" width="560">
 
-### Workflow
+
+### Installation
+0. Active Kubernetes cluster of v1.22 or higher
+1. Install cert manager `kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.8.0/cert-manager.yaml`
+2. Install components 
+```
+docker buildx build --platform="linux/amd64,linux/arm64" -t tibbar/of-operator:v1.2 . --push
+IMG=tibbar/of-operator:v1.2 make generate
+IMG=tibbar/of-operator:v1.2 make deploy
+ ```
+
+### Example
 
 When wishing to leverage featureflagging within the local pod, the following steps are required:
 
@@ -70,17 +63,9 @@ root@nginx:/# curl localhost:8080
 } 
 ```
 
-#### Build deploy
-
-```
-docker buildx build --platform="linux/amd64,linux/arm64" -t tibbar/of-operator:v1.2 . --push
-IMG=tibbar/of-operator:v1.2 make generate
-IMG=tibbar/of-operator:v1.2 make deploy
- ```
-
  ### TODO
-
-    * [ ] Add a test for the operator
+  
+    * [ ] Implement feature flag reconciliation loop
     * [ ] Detect and update configmaps on change
     * [ ] Finalizers
     * [ ] Cleanup on deletion

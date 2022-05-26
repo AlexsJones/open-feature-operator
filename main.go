@@ -88,9 +88,7 @@ func main() {
 	}
 
 	//+kubebuilder:scaffold:builder
-
 	hookServer := mgr.GetWebhookServer()
-
 	hookServer.Register("/mutate-v1-pod", &webhook.Admission{Handler: &webhooks.PodMutator{Client: mgr.GetClient(),
 		Log: ctrl.Log.WithName("mutating-webhook")}})
 
