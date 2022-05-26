@@ -61,6 +61,15 @@ spec:
     - containerPort: 80
 ```
 
+3. Example usage from host container
+
+```
+root@nginx:/# curl localhost:8080
+{
+  "foo" : "bar"
+} 
+```
+
 #### Build deploy
 
 ```
