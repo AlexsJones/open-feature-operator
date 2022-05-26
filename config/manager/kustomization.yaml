@@ -13,4 +13,4 @@ kind: Kustomization
 images:
 - name: controller
   newName: tibbar/of-operator
-  newTag: v1.4
+  newTag: v1.9
